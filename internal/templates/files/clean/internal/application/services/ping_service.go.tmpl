@@ -1,0 +1,41 @@
+package services
+
+import "{{ .Module }}/internal/domain/entity"
+{{- if .UseGorm }}
+
+import "gorm.io/gorm"
+{{- end }}
+
+{{- if .UseGorm }}
+type PingService struct {
+	db *gorm.DB
+}
+
+func NewPingService(db *gorm.DB) *PingService {
+	return &PingService{db: db}
+}
+{{- else }}
+type PingService struct{}
+
+func NewPingService() *PingService {
+	return &PingService{}
+}
+{{- end }}
+
+func (s *PingService) Ping() entity.PingResponse {
+	{{- if .UseGorm }}
+	if s.db != nil {
+		_ = s.db.Create(&entity.PingLog{Message: "ping"}).Error
+	}
+	{{- end }}
+	return entity.PingResponse{Message: "pong"}
+}
+
+func (s *PingService) Pong() entity.PingResponse {
+	{{- if .UseGorm }}
+	if s.db != nil {
+		_ = s.db.Create(&entity.PingLog{Message: "pong"}).Error
+	}
+	{{- end }}
+	return entity.PingResponse{Message: "ping"}
+}

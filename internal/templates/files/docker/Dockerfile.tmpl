@@ -1,0 +1,8 @@
+FROM golang:1.24.1-alpine
+
+WORKDIR /app
+COPY . .
+RUN go mod tidy
+RUN if [ -d ./cmd/api ]; then go build -o app ./cmd/api; else go build -o app .; fi
+
+CMD ["./app"]

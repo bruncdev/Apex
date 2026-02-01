@@ -1,0 +1,10 @@
+package persistence
+
+import (
+	"{{ .Module }}/internal/domain/entity"
+	"gorm.io/gorm"
+)
+
+func AutoMigrate(db *gorm.DB) error {
+	return db.AutoMigrate(&entity.PingLog{})
+}

@@ -1,0 +1,24 @@
+package handlers
+
+import (
+	"net/http"
+
+	"{{ .Module }}/internal/application/services"
+	"github.com/gin-gonic/gin"
+)
+
+type PingHandler struct {
+	Svc *services.PingService
+}
+
+func NewPingHandler(svc *services.PingService) *PingHandler {
+	return &PingHandler{Svc: svc}
+}
+
+func (h *PingHandler) Ping(c *gin.Context) {
+	c.JSON(http.StatusOK, h.Svc.Ping())
+}
+
+func (h *PingHandler) Pong(c *gin.Context) {
+	c.JSON(http.StatusOK, h.Svc.Pong())
+}

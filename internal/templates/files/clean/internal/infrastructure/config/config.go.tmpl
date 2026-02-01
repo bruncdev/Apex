@@ -1,0 +1,26 @@
+package config
+
+import (
+	"os"
+	"strings"
+)
+
+type Config struct {
+	HTTPAddr    string
+	DatabaseDSN string
+}
+
+func Load() Config {
+	return Config{
+		HTTPAddr:    getenv("HTTP_ADDR", ":8080"),
+		DatabaseDSN: getenv("DATABASE_DSN", ""),
+	}
+}
+
+func getenv(k, def string) string {
+	v := strings.TrimSpace(os.Getenv(k))
+	if v == "" {
+		return def
+	}
+	return v
+}

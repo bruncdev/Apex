@@ -1,0 +1,67 @@
+package main
+
+import (
+	"log"
+
+	"{{ .Module }}/internal/application/services"
+	"{{ .Module }}/internal/infrastructure/config"
+	"{{ .Module }}/internal/interfaces/http/handlers"
+	"{{ .Module }}/internal/interfaces/http/routes"
+	"github.com/gin-gonic/gin"
+
+	{{- if and (ne .Database "none") .UseGorm }}
+	"{{ .Module }}/internal/infrastructure/persistence"
+	"gorm.io/gorm"
+	{{- if eq .Database "postgres" }}
+	"gorm.io/driver/postgres"
+	{{- else if eq .Database "mysql" }}
+	"gorm.io/driver/mysql"
+	{{- else if eq .Database "sqlite" }}
+	"gorm.io/driver/sqlite"
+	{{- end }}
+	{{- else if eq .Database "postgres" }}
+	_ "github.com/lib/pq"
+	{{- else if eq .Database "mysql" }}
+	_ "github.com/go-sql-driver/mysql"
+	{{- else if eq .Database "sqlite" }}
+	_ "modernc.org/sqlite"
+	{{- end }}
+)
+
+func main() {
+	cfg := config.Load()
+
+	r := gin.New()
+	r.Use(gin.Recovery())
+
+	{{- if and (ne .Database "none") .UseGorm }}
+	var db *gorm.DB
+	if cfg.DatabaseDSN != "" {
+		var err error
+		{{- if eq .Database "postgres" }}
+		db, err = gorm.Open(postgres.Open(cfg.DatabaseDSN), &gorm.Config{})
+		{{- else if eq .Database "mysql" }}
+		db, err = gorm.Open(mysql.Open(cfg.DatabaseDSN), &gorm.Config{})
+		{{- else if eq .Database "sqlite" }}
+		db, err = gorm.Open(sqlite.Open(cfg.DatabaseDSN), &gorm.Config{})
+		{{- end }}
+		if err != nil {
+			log.Printf("database connection error: %v", err)
+		} else if err := persistence.AutoMigrate(db); err != nil {
+			log.Printf("auto migrate error: %v", err)
+		}
+	}
+	pingSvc := services.NewPingService(db)
+	{{- else }}
+	pingSvc := services.NewPingService()
+	{{- end }}
+
+	pingHandler := handlers.NewPingHandler(pingSvc)
+
+	routes.Register(r, pingHandler)
+
+	log.Printf("listening on %s", cfg.HTTPAddr)
+	if err := r.Run(cfg.HTTPAddr); err != nil {
+		log.Fatalf("server error: %v", err)
+	}
+}

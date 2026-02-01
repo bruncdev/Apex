@@ -1,0 +1,27 @@
+MIGRATE_BIN ?= migrate
+MIGRATIONS_DIR := internal/migrations
+
+ifneq (,$(wildcard .env))
+include .env
+export
+endif
+
+DATABASE_DSN ?=
+
+MIGRATE_PATH := $(shell command -v $(MIGRATE_BIN) 2>/dev/null)
+ifeq ($(MIGRATE_PATH),)
+MIGRATE_PATH := $(HOME)/go/bin/migrate
+endif
+
+.PHONY: migrate-create migrate-up ensure-migrate
+
+ensure-migrate:
+ifeq ($(shell command -v $(MIGRATE_PATH) 2>/dev/null),)
+	GOFLAGS="" go install -tags 'postgres,mysql,sqlite' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+endif
+
+migrate-create: ensure-migrate
+	$(MIGRATE_PATH) create -ext sql -dir $(MIGRATIONS_DIR) $(name)
+
+migrate-up: ensure-migrate
+	$(MIGRATE_PATH) -path $(MIGRATIONS_DIR) -database "$(DATABASE_DSN)" up

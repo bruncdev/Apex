@@ -1,0 +1,10 @@
+package persistence
+
+import (
+	"{{ .Module }}/modules/ping"
+	"gorm.io/gorm"
+)
+
+func AutoMigrate(db *gorm.DB) error {
+	return db.AutoMigrate(&ping.PingLog{})
+}

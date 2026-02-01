@@ -1,0 +1,47 @@
+# {{ .Name }}
+
+## Prerequisites
+- Go 1.21+
+- Docker (recommended)
+
+## Environment
+Create your env file:
+```
+cp .env.example .env
+```
+
+## Docker-first flow (recommended)
+1) Start the database:
+```
+docker compose up -d db
+```
+2) Run migrations:
+```
+make migrate-up
+```
+3) Build and run the API:
+```
+docker compose up --build api
+```
+
+## Migrations
+This template uses GORM AutoMigrate when enabled. If you prefer SQL migrations, the Makefile auto-installs the migrate CLI (first run requires internet):
+
+Create a migration:
+```
+make migrate-create name=create_ping_logs
+```
+
+Run migrations:
+```
+make migrate-up
+```
+
+## Quick start (Go)
+```
+go run ./cmd/api
+```
+
+## Endpoints
+- `GET /api/v1/ping`
+- `GET /api/v1/pong`

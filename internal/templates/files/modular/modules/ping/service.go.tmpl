@@ -1,0 +1,39 @@
+package ping
+
+{{- if .UseGorm }}
+import "gorm.io/gorm"
+{{- end }}
+
+type Service struct {
+	{{- if .UseGorm }}
+	db *gorm.DB
+	{{- end }}
+}
+
+{{- if .UseGorm }}
+func NewService(db *gorm.DB) *Service {
+	return &Service{db: db}
+}
+{{- else }}
+func NewService() *Service {
+	return &Service{}
+}
+{{- end }}
+
+func (s *Service) Ping() map[string]string {
+	{{- if .UseGorm }}
+	if s.db != nil {
+		_ = s.db.Create(&PingLog{Message: "ping"}).Error
+	}
+	{{- end }}
+	return map[string]string{"message": "pong"}
+}
+
+func (s *Service) Pong() map[string]string {
+	{{- if .UseGorm }}
+	if s.db != nil {
+		_ = s.db.Create(&PingLog{Message: "pong"}).Error
+	}
+	{{- end }}
+	return map[string]string{"message": "ping"}
+}
