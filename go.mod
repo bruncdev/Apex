@@ -1,4 +1,4 @@
-module apex
+module github.com/bruncdev/apex
 
 go 1.21
 
