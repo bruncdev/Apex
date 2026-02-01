@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"apex/core"
-	"apex/internal/templates"
+	"github.com/bruncdev/apex/core"
+	"github.com/bruncdev/apex/internal/templates"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/spf13/cobra"
