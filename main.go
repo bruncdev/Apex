@@ -1,6 +1,6 @@
 package main
 
-import "apex/cmd"
+import "github.com/bruncdev/apex/cmd"
 
 func main() {
 	cmd.Execute()
