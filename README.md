@@ -4,7 +4,7 @@ A CLI scaffolder for Go projects with selectable architectures.
 
 ## Install (Go)
 ```
-go install github.com/<bruncdev>/apex@latest
+go install github.com/bruncdev/apex@latest
 ```
 
 ## Install (Binary Release)
